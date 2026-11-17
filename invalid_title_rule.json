@@ -1,0 +1,102 @@
+{
+  "min_effective_chars": 4,
+  "max_navigation_term_ratio": 0.6,
+  "common": {
+    "invalid_exact": [
+      "home",
+      "homepage",
+      "untitled",
+      "new tab",
+      "document",
+      "article"
+    ],
+    "invalid_contains": [
+      "privacy policy",
+      "terms of service",
+      "cookie policy"
+    ],
+    "navigation_terms": [
+      "home",
+      "menu",
+      "search",
+      "category",
+      "login",
+      "sign in",
+      "sign up"
+    ]
+  },
+  "zh": {
+    "invalid_exact": [
+      "首页",
+      "主页",
+      "未命名",
+      "新标签页",
+      "文档",
+      "文章详情",
+      "登录",
+      "注册"
+    ],
+    "invalid_contains": [
+      "关于我们",
+      "联系我们",
+      "隐私政策",
+      "用户协议"
+    ],
+    "navigation_terms": [
+      "首页",
+      "菜单",
+      "搜索",
+      "分类",
+      "登录",
+      "注册"
+    ]
+  },
+  "en": {
+    "invalid_exact": [
+      "login",
+      "sign in",
+      "sign up"
+    ],
+    "invalid_contains": [
+      "about us",
+      "contact us"
+    ],
+    "navigation_terms": [
+      "latest",
+      "popular",
+      "related"
+    ]
+  },
+  "es": {
+    "invalid_exact": [
+      "inicio",
+      "iniciar sesión",
+      "registrarse"
+    ],
+    "invalid_contains": [
+      "política de privacidad",
+      "términos de servicio"
+    ],
+    "navigation_terms": [
+      "menú",
+      "buscar",
+      "categoría"
+    ]
+  },
+  "fr": {
+    "invalid_exact": [
+      "accueil",
+      "connexion",
+      "s'inscrire"
+    ],
+    "invalid_contains": [
+      "politique de confidentialité",
+      "conditions d'utilisation"
+    ],
+    "navigation_terms": [
+      "menu",
+      "recherche",
+      "catégorie"
+    ]
+  }
+}

@@ -1,0 +1,120 @@
+# Generic application configuration example. Copy to config.local.yml for local use.
+# Put machine-specific values and provider credentials in the ignored local file.
+
+version: v1.0.0
+
+cache:
+  page_context_ttl_hours: 8
+  summary_ttl_hours: 8
+  graph_ttl_hours: 8
+  qa_session_ttl_hours: 8
+
+observability:
+  # Shared identity for JSON service_name and OTel service.name (SERVICE_NAME override).
+  service_name: ainsight-backend
+  logging:
+    # Standard Python logging level for backend service logs.
+    level: INFO
+    # Maximum field length in characters; service_name and exception stacks stay complete.
+    max_field_length: 2000
+    # Optional UTF-8 JSON file path including filename, e.g. logs/ainsight.jsonl.
+    # Null/empty uses stdout. Files append; parent directories are created automatically.
+    # Relative paths use the working directory. LOG_OUTPUT_PATH overrides this value.
+    output_path: null
+  otel:
+    # Enable OTLP export when an OpenTelemetry Collector is available.
+    enabled: false
+    exporter_endpoint: http://localhost:4317
+    exporter_headers: {}
+    exporter_insecure: true
+    exporter_protocol: grpc
+    traces:
+      enabled: true
+      sampling_ratio: 1.0
+    metrics:
+      # Enable online service metrics export.
+      enabled: false
+    queue:
+      # Bounded in-memory queue used by OTel batch processors.
+      max_queue_size: 2048
+      schedule_delay_ms: 5000
+      max_export_batch_size: 512
+      export_timeout_ms: 30000
+  langfuse:
+    # Enable detailed LLM tracing only after Langfuse credentials are configured.
+    enabled: false
+    host: http://localhost:3000
+    public_key: ""
+    secret_key: ""
+    debug: false
+    flush_interval_ms: 10000
+    queue:
+      # Bounded local queue for asynchronous Langfuse event reporting.
+      max_size: 10000
+      enqueue_timeout_ms: 5
+      flush_timeout_seconds: 5
+      drop_when_full: true
+
+ai:
+  summary:
+    provider: openai_compatible
+    model_name: gpt-4.1-mini
+    base_url: https://api.openai.com/v1
+    api_key: ""
+    prompt_version: summary_v1
+    structured_output: true
+    tools_enabled: false
+    max_output_tokens: 1600
+    temperature: 0.2
+    input_token_price_per_1k: 0.0
+    output_token_price_per_1k: 0.0
+
+  graph:
+    provider: openai_compatible
+    model_name: gpt-4.1-mini
+    base_url: https://api.openai.com/v1
+    api_key: ""
+    prompt_version: graph_v1
+    structured_output: true
+    tools_enabled: false
+    max_output_tokens: 1600
+    temperature: 0.1
+    input_token_price_per_1k: 0.0
+    output_token_price_per_1k: 0.0
+
+  qa:
+    provider: openai_compatible
+    model_name: gpt-4.1-mini
+    base_url: https://api.openai.com/v1
+    api_key: ""
+    prompt_version: qa_v1
+    structured_output: true
+    tools_enabled: false
+    target_output_tokens: 800
+    max_output_tokens: 1000
+    recent_qa_messages: 6
+    # Minimum length before search findings are considered usable.
+    search_findings_min_chars: 30
+    # Initial local character n-gram cosine threshold; calibrate with QA samples.
+    search_findings_similarity_threshold: 0.12
+    # Maximum search result groups included in the final QA prompt.
+    search_findings_max_results: 3
+    # Maximum relevant sentences retained per search result group.
+    search_findings_sentence_limit: 3
+    # Maximum characters retained per compressed search result group.
+    search_findings_max_chars_per_result: 500
+    # Maximum total characters retained for all compressed search findings.
+    search_findings_max_total_chars: 2500
+    temperature: 0.2
+    input_token_price_per_1k: 0.0
+    output_token_price_per_1k: 0.0
+
+  embedding:
+    enabled: false
+    provider: openai_compatible
+    model_name: text-embedding-3-small
+    base_url: https://api.openai.com/v1
+    api_key: ""
+    timeout_seconds: 10
+    dimensions: null
+    max_input_chars: 8000

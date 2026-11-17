@@ -1,0 +1,67 @@
+# Local collection with otel/opentelemetry-collector-contrib:0.123.0.
+# Mount the application's JSONL directory read-only at /var/log/ainsight.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  filelog/ainsight:
+    include: [/var/log/ainsight/*.jsonl]
+    # Local debugging can replay existing files after a Collector restart.
+    start_at: beginning
+    operators:
+      - type: json_parser
+        parse_from: body
+        parse_to: attributes
+        timestamp:
+          parse_from: attributes.ts
+          layout_type: gotime
+          layout: '2006-01-02T15:04:05.999999999Z07:00'
+        severity:
+          parse_from: attributes.level
+      # One parser must set both IDs; a second parser would clear the first ID.
+      # Missing span_id is valid for fallback traces outside an active span.
+      - type: trace_parser
+        if: 'attributes.trace_id != nil and attributes.trace_id != ""'
+        trace_id:
+          parse_from: attributes.trace_id
+        span_id:
+          parse_from: attributes.span_id
+      - type: copy
+        if: 'attributes.service_name != nil and attributes.service_name != ""'
+        from: attributes.service_name
+        to: resource["service.name"]
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+    spike_limit_mib: 64
+  batch:
+    timeout: 1s
+    send_batch_size: 512
+    send_batch_max_size: 1024
+
+exporters:
+  otlp/signoz:
+    endpoint: ${env:SIGNOZ_OTLP_ENDPOINT:-host.docker.internal:4317}
+    # Local self-hosted SigNoz only; configure TLS/auth for a remote deployment.
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/signoz]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/signoz]
+    logs:
+      receivers: [filelog/ainsight, otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/signoz]
